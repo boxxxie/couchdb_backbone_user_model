@@ -11,6 +11,14 @@ if(Backbone && !Backbone.CouchDB_User && $.couch){
         //base_url: null
       },
       helpers: {
+        make_db: function() {
+          var db;
+          db = $.couch.db(con.config.db_name);
+          if (con.config.base_url != null) {
+            db.uri = "" + con.config.base_url + "/" + con.config.db_name + "/";
+          }
+          return db;
+        },
         extract_collection_name: function(model) {
           var _name, _splitted;
           if (model == null) {
