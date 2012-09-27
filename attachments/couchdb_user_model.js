@@ -68,7 +68,7 @@ if(Backbone && !Backbone.CouchDB_User && $.couch){
       create: function(model, opts) {
         var coll, vals;
         vals = model.toJSON();
-        //coll = this.helpers.extract_collection_name(model);
+        coll = this.helpers.extract_collection_name(model);
         if (coll.length > 0) {
           vals.collection = coll;
         }
@@ -121,6 +121,7 @@ if(Backbone && !Backbone.CouchDB_User && $.couch){
 
 
     Backbone.CouchDB_User = Backbone.Model.extend({
+      url:function(){return '_users/' + 'org.couchdb.user:'+ this.name;},
       sync:function(method, model, opts) {
         if (opts.success == null) {
           opts.success = function() {};

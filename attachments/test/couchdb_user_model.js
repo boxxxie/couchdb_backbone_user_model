@@ -9,6 +9,12 @@ function   call(done){
   }
 }
 
+function log_args(namespace){
+  return function(){
+    console.log(namespace,arguments)
+  }
+}
+
 describe('mocha/chai',function(){
   it('testing tests',function(){ 
     assert.typeOf('foo','string','foo is string');
@@ -61,9 +67,10 @@ describe('user model',function(){
 
   it("should be able to update it's password",function(done){
     var fun_user_params = {password:changed_password};
+		user_model.on('all',log_args('user model'))
     user_model.set(fun_user_params);
     user_model.on('loggedin',call(done));
-    user_model.on('sync', call(user_model.login))
+    user_model.on('sync', _.bind(user_model.login, user_model))
     user_model.save();
   })
 
