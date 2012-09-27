@@ -27,12 +27,13 @@ describe('user model',function(){
   });
   var user_pass = $.couch.newUUID();
   var user_name = $.couch.newUUID();
-  
+  var changed_password = $.couch.newUUID();
+  var user_model = new Backbone.CouchDB_User({
+    name:user_name,
+    password:user_pass
+  });
+
   it('should be able to sign up',function(done){
-    var user = new Backbone.CouchDB_User({
-      name:user_name,
-      password:user_pass
-    });
     function make_sure_user_was_added(){
       $.couch.userDb(
         function(user_db){
@@ -42,23 +43,35 @@ describe('user model',function(){
           })
         })
     }
-    user.on('registered',make_sure_user_was_added);
-    user.signup();
+    user_model.on('registered',make_sure_user_was_added);
+    user_model.on('error:registered', _throw('uhoh'));
+    user_model.signup();
   })
 
   it('should be able to login', function(done) {
-    var user = new Backbone.CouchDB_User({
-      name:user_name,
-      password:user_pass
-    });
     function make_sure_user_was_loggedin() {
       $.couch.session({
         success: call(done),
         error: _throw( 'session failed')
       });
     }
-    user.on('loggedin', make_sure_user_was_loggedin);
-    user.login();
+    user_model.on('loggedin', make_sure_user_was_loggedin);
+    user_model.login();
+  });
+
+  it("should be able to update it's password",function(done){
+    var fun_user_params = {password:changed_password};
+    user_model.set(fun_user_params);
+    user_model.on('loggedin',call(done));
+    user_model.on('sync', call(user_model.login))
+    user_model.save();
+  })
+
+  it('should be able to logout', function(done) {
+    //user_model.on('all',log_args('user_model'));
+    user_model.on('loggedout', call(done));
+    user_model.on('error:loggedout', _throw('oopsie'));
+    user_model.logout();
   });
   
   after(function(){
