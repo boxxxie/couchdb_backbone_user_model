@@ -1,4 +1,5 @@
 
+
 //http://blog.couchbase.com/what%E2%80%99s-new-couchdb-10-%E2%80%94-part-4-security%E2%80%99n-stuff-users-authentication-authorisation-and-permissions
 
 //i wasn't able to do the curl stuff from the above site, but i was able to do stuff with $.couch in futon
