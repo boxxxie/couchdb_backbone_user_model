@@ -1,4 +1,10 @@
-
+if(Backbone && !Backbone.CouchDB_User){
+  Backbone.CouchDB_User = Backbone.Model.extend({
+    signup:function(){
+      this.trigger('registered');
+    }
+  });
+}
 
 //http://blog.couchbase.com/what%E2%80%99s-new-couchdb-10-%E2%80%94-part-4-security%E2%80%99n-stuff-users-authentication-authorisation-and-permissions
 
