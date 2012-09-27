@@ -49,12 +49,3 @@ var app = {};
 app.index = function () {
   
 };
-
-$(function () { 
-  app.s = $.sammy(function () {
-    // Index of all databases
-    this.get('', app.index);
-    this.get("#/", app.index);
-  })
-  app.s.run();
-});

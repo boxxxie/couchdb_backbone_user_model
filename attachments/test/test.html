@@ -2,21 +2,27 @@
   <head>
     <meta charset="utf-8">
     <title>Mocha Tests</title>
-    <link rel="stylesheet" href="attachments/mocha.css" />
+    <link rel="stylesheet" href="mocha.css" />
   </head>
   <body>
     <div id="mocha"></div>
-    <script src="attachments/jquery.js"></script>
-    <script src="attachments/jquery.couch.js"></script>
-    <script src="attachments/underscore.js"></script>
-    <script src="attachments/backbone.js"></script>
-    <script src="attachments/couch_backbone_user_model.js"></script>
-    <script src="attachments/should.js"></script>
-    <script src="attachments/expect.js"></script>
-    <script src="attachments/mocha.js"></script>
-    <script>mocha.setup('bdd')</script>
-    <script src="attachments/test/couch_backbone_user_model.js"></script>
-    <script src="attachments/site.js"></script>
+    <script src="jquery.js"></script>
+    <script src="jquery.couch.js"></script>
+    <script src="underscore.js"></script>
+    <script src="backbone.js"></script>
+    <script src="couchdb_user_model.js"></script>
+    <script src="mocha.js"></script>
+    <script src="chai.js"></script>
+    <script>
+      (function(){
+      mocha.setup('bdd');
+      assert = chai.assert;
+      expect = chai.expect;
+      should = chai.should;
+      })()
+    </script>
+    <script src="site.js"></script>
+    <script src="test/couchdb_user_model.js"></script>
     <script>
       mocha.run();
     </script>

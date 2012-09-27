@@ -1,14 +1,10 @@
-var backbone = require('backbone');
-var $ = require('jquery');
-var _ = require('underscore');
-require('.jquery.couch.js');
 
 //http://blog.couchbase.com/what%E2%80%99s-new-couchdb-10-%E2%80%94-part-4-security%E2%80%99n-stuff-users-authentication-authorisation-and-permissions
 
 //i wasn't able to do the curl stuff from the above site, but i was able to do stuff with $.couch in futon
 
 //editing an existing user (need to be logged in as admin to do this)
-$.couch.userDb(function(db){
+/*$.couch.userDb(function(db){
     db.openDoc("org.couchdb.user:10", //user name is "10"
 	       {success:function(user){
 		   user.roles.push("hello");
@@ -47,7 +43,7 @@ $.couch.session(autoSuccess())
  }
 }
 */
-
+/*
 //creating a user doc with a new password (doesn't save to the db, just makes a doc with a proper password)
 $.couch.prepareUserDoc({name:"special",roles:["myrole"]},'12345')
 //XHR finished loading: "http://localhost:5984/_uuids?count=1".
@@ -236,3 +232,4 @@ function add_new_user(user_data){
 	  alert(err_message);
 	}});}
 }
+*/
