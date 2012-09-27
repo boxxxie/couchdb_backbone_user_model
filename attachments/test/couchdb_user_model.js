@@ -30,7 +30,7 @@ describe('user', function() {
         function(user_db){
           user_db.openDoc("org.couchdb.user:"+user_name, {
             success:function(user){
-              done();h
+              done();
 	    },
             error:function(){
               throw "user doesn't exist'";
