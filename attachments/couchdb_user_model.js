@@ -3,12 +3,7 @@ if(Backbone && !Backbone.CouchDB_User && $.couch){
     var con;
     Backbone.couch_user_connector = con = {
       config: {
-        db_name: "_users",
-        //ddoc_name: "backbone_example",
-        //view_name: "byCollection",
-        //list_name: null,
-        //global_changes: false,
-        //base_url: null
+        db_name: "_users" //have a feeling this isn't used
       },
       helpers: {
         make_db: function() {
@@ -18,28 +13,7 @@ if(Backbone && !Backbone.CouchDB_User && $.couch){
             db.uri = "" + con.config.base_url + "/" + con.config.db_name + "/";
           }
           return db;
-        },
- /*       extract_collection_name: function(model) {
-          var _name, _splitted;
-          if (model == null) {
-            throw new Error("No model has been passed");
-          }
-          if (!(((model.collection != null) && (model.collection.url != null)) || (model.url != null))) {
-            return "";
-          }
-          if (model.url != null) {
-            _name = _.isFunction(model.url) ? model.url() : model.url;
-          } else {
-            _name = _.isFunction(model.collection.url) ? model.collection.url() : model.collection.url;
-          }
-          if (_name[0] === "/") {
-            _name = _name.slice(1, _name.length);
-          }
-          _splitted = _name.split("/");
-          _name = _splitted.length > 0 ? _splitted[0] : _name;
-          _name = _name.replace("/", "");
-          return _name;
-        } */
+        }, 
       },
       read: function(model, opts) {
         return con.read_model(model, opts);
@@ -68,10 +42,6 @@ if(Backbone && !Backbone.CouchDB_User && $.couch){
       create: function(model, opts) {
         var coll, vals;
         vals = model.toJSON();
-        //coll = this.helpers.extract_collection_name(model);
-        //if (coll.length > 0) {
-        //  vals.collection = coll;
-        //}
         return this.helpers.make_db().saveDoc(vals, {
           success: function(doc) {
             opts.success({
@@ -145,7 +115,7 @@ if(Backbone && !Backbone.CouchDB_User && $.couch){
       },
       signup:function(){
         var user_model = this;
-        var user_data = this.toJSON();
+        var user_data = user_model.toJSON();
         var password = user_data.password;
         delete user_data.password;
         $.couch.signup(user_data,password)
@@ -155,14 +125,6 @@ if(Backbone && !Backbone.CouchDB_User && $.couch){
           .fail(function(a,b,c){
             user_model.trigger('error:registered')
           })
-        /*$.couch.signup(user_data, password,{
-          success:function(){
-	    user_model.trigger('registered');
-          },
-          error:function() {
-            user_model.trigger('error:registered');
-          }
-       })*/
       },
       login: function() {
         var user_model = this;

@@ -107,7 +107,7 @@ describe('user model',function(){
     user_model.logout();
   });
   
-  after(function(){
+  after(function(done){
     // cleanup: remove registered user, must be logged out (admin
     // party mode)
     $.couch.userDb(
@@ -115,6 +115,7 @@ describe('user model',function(){
         user_db.openDoc("org.couchdb.user:"+user_name, {
           success:function(userDoc){
             user_db.removeDoc(_.pick(userDoc,'_id','_rev'));
+            done();
 	  },
           error:_throw( "user doesn't exist")
         })
