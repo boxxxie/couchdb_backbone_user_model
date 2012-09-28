@@ -159,16 +159,28 @@ if(Backbone && !Backbone.CouchDB_User && $.couch){
       },
       login: function() {
         var user_model = this;
-        $.couch.login({ 
-          name: user_model.get('name'), 
-          password: user_model.get('password'), 
-          success: function() {
-            user_model.trigger('loggedin');
-          },
-          error:function() {
-            user_model.trigger('error:loggedin');
-          }
-        });
+        $.when(
+          $.couch.login({ 
+            name: user_model.get('name'), 
+            password: user_model.get('password')
+          })
+        ).done(
+          function(){
+            $.when($.couch.session())
+              .done(
+                function(s) {
+                  console.log('then',s);
+                  user_model.trigger('loggedin');
+                },
+                function() {
+                  user_model.trigger('error:loggedin');
+                })
+          })
+
+          //          error:function() {
+          //            user_model.trigger('error:loggedin');
+          //          });
+          
       },
       logout: function() {
         var user_model = this;
@@ -187,15 +199,15 @@ if(Backbone && !Backbone.CouchDB_User && $.couch){
       }
     });
     
-/*
-    function log_args(namespace){
+    /*
+      function log_args(namespace){
       return function(){
-        console.log(namespace,arguments)
+      console.log(namespace,arguments)
       }
-    }
+      }
 
-    $.couch.logout({success:log_args('success'),error:log_args('error')});
-*/
+      $.couch.logout({success:log_args('success'),error:log_args('error')});
+    */
 
   })()
 }

@@ -139,7 +139,7 @@
      */
     session: function(options) {
       options = options || {};
-      $.ajax({
+      return $.ajax({
         type: "GET", url: this.urlPrefix + "/_session",
         beforeSend: function(xhr) {
             xhr.setRequestHeader('Accept', 'application/json');
@@ -161,7 +161,7 @@
      * @private
      */
     userDb : function(callback) {
-      $.couch.session({
+      return $.couch.session({
         success : function(resp) {
           var userDb = $.couch.db(resp.info.authentication_db);
           callback(userDb);
@@ -202,7 +202,7 @@
      */
     login: function(options) {
       options = options || {};
-      $.ajax({
+      return $.ajax({
         type: "POST", url: this.urlPrefix + "/_session", dataType: "json",
         data: {name: options.name, password: options.password},
         beforeSend: function(xhr) {
@@ -230,7 +230,7 @@
      */
     logout: function(options) {
       options = options || {};
-      $.ajax({
+      return $.ajax({
         type: "DELETE", url: this.urlPrefix + "/_session", dataType: "json",
         username : "_", password : "_",
         beforeSend: function(xhr) {
@@ -624,7 +624,7 @@
             var uri = this.uri + encodeDocId(doc._id);
           }
           var versioned = maybeApplyVersion(doc);
-          $.ajax({
+          return $.ajax({
             type: method, url: uri + encodeOptions(options),
             contentType: "application/json",
             dataType: "json", data: toJSON(doc),
@@ -992,7 +992,7 @@
     options = $.extend({successStatus: 200}, options);
     ajaxOptions = $.extend(defaultAjaxOpts, ajaxOptions);
     errorMessage = errorMessage || "Unknown error";
-    $.ajax($.extend($.extend({
+    return $.ajax($.extend($.extend({
       type: "GET", dataType: "json", cache : !$.browser.msie,
       beforeSend: function(xhr){
         if(ajaxOptions && ajaxOptions.headers){

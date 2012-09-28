@@ -57,7 +57,10 @@ describe('user model',function(){
   it('should be able to login', function(done) {
     function make_sure_user_was_loggedin() {
       $.couch.session({
-        success: call(done),
+        success: function(){
+          user_model.off();
+          done();
+        },
         error: _throw( 'session failed')
       });
     }
@@ -67,7 +70,7 @@ describe('user model',function(){
 
   it("should be able to update it's password",function(done){
     var fun_user_params = {password:changed_password};
-		user_model.on('all',log_args('user model'))
+    user_model.on('all',log_args('user model'))
     user_model.set(fun_user_params);
     user_model.on('loggedin',call(done));
     user_model.on('sync', _.bind(user_model.login, user_model))
