@@ -161,6 +161,15 @@
      * @private
      */
     userDb : function(callback) {
+      function userDB_promise(){
+        return $.couch.session()
+          .pipe(function(resp){
+            return $.couch.db(resp.info.authentication_db);
+          })
+      }
+      if(!callback){
+        return userDB_promise();
+      }  
       return $.couch.session({
         success : function(resp) {
           var userDb = $.couch.db(resp.info.authentication_db);

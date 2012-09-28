@@ -74,7 +74,10 @@ describe('user model',function(){
   it('should have all proper fields available when logged in', function(done) {
     function make_sure_user_has_required_fields() {
       var expected_user_doc = _.extend({},user_defaults,{type:"user"});
-      expect(user_model.toJSON()).eql(expected_user_doc);
+      var user_model_to_compare = user_model.toJSON();
+      delete user_model_to_compare._rev;
+      delete user_model_to_compare._id;
+      expect(user_model_to_compare).eql(expected_user_doc);
       done();
     }
     user_model.on('loggedin', make_sure_user_has_required_fields);
