@@ -158,20 +158,12 @@ if(Backbone && !Backbone.CouchDB_User && $.couch){
       },
       change_password:function(new_password){
         var user_model = this;
-        //var
+        return $.when(user_model.save({password:new_password}))
+          .pipe(_.bind(user_model.login, user_model))
+          .done(_.bind(user_model.trigger, user_model,"password-changed"))
+          .fail(_.bind(user_model.trigger, user_model,"error:password-changed")); 
       }
     });
-    
-    /*
-      function log_args(namespace){
-      return function(){
-      console.log(namespace,arguments)
-      }
-      }
-
-      $.couch.logout({success:log_args('success'),error:log_args('error')});
-    */
-
   })()
 }
 

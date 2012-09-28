@@ -9,11 +9,11 @@ function   call(done){
   }
 }
 
-function log_args(namespace){
+/*function log_args(namespace){
   return function(){
     console.log(namespace,arguments)
   }
-}
+}*/
 
 describe('mocha/chai',function(){
   it('testing tests',function(){ 
@@ -89,19 +89,12 @@ describe('user model',function(){
   });
 
   it("should be able to update it's password",function(done){
-    var fun_user_params = {password:changed_password};
-    //user_model.on('all',log_args('user model'));
-    user_model.set(fun_user_params);
-    user_model.on('loggedin',function(){
-      user_model.off();
-      done()
-    });
-    user_model.on('sync', _.bind(user_model.login, user_model))
-    user_model.save();
+    user_model.change_password(changed_password)
+      .done(_.bind(done))
+      .fail(_throw('failed to change users password'));
   })
 
   it('should be able to logout', function(done) {
-    //user_model.on('all',log_args('user_model'));
     user_model.on('loggedout', call(done));
     user_model.on('error:loggedout', _throw('oopsie'));
     user_model.logout();
@@ -116,7 +109,7 @@ describe('user model',function(){
           success:function(userDoc){
             user_db.removeDoc(_.pick(userDoc,'_id','_rev'));
             done();
-	  },
+          },
           error:_throw( "user doesn't exist")
         })
       })
