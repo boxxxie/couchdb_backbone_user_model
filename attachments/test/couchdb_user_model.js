@@ -34,10 +34,13 @@ describe('user model',function(){
   var user_pass = $.couch.newUUID();
   var user_name = $.couch.newUUID();
   var changed_password = $.couch.newUUID();
-  var user_model = new Backbone.CouchDB_User({
+  var user_defaults = {
     name:user_name,
-    password:user_pass
-  });
+    password:user_pass,
+    roles:['my_role'],
+    custom_field:'my custom field'
+  };
+  var user_model = new Backbone.CouchDB_User(user_defaults);
 
   it('should be able to sign up',function(done){
     function make_sure_user_was_added(){
@@ -58,7 +61,7 @@ describe('user model',function(){
     function make_sure_user_was_loggedin() {
       $.couch.session({
         success: function(){
-          user_model.off();
+          user_model.off(); // turn off event listener that we added earlier
           done();
         },
         error: _throw( 'session failed')
@@ -68,9 +71,18 @@ describe('user model',function(){
     user_model.login();
   });
 
+  it('should have all proper fields available when logged in', function(done) {
+    function make_sure_user_has_required_fields() {
+      expect(user_model.toJSON()).eql(user_defaults);
+      done();
+    }
+    user_model.on('loggedin', make_sure_user_has_required_fields);
+    user_model.login();
+  });
+
   it("should be able to update it's password",function(done){
     var fun_user_params = {password:changed_password};
-    user_model.on('all',log_args('user model'))
+    user_model.on('all',log_args('user model'));
     user_model.set(fun_user_params);
     user_model.on('loggedin',call(done));
     user_model.on('sync', _.bind(user_model.login, user_model))
