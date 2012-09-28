@@ -133,7 +133,7 @@ if(Backbone && !Backbone.CouchDB_User && $.couch){
         $.couch.login(name_pass)
           .pipe(function(nothing){
             return $.couch.userDb()
-          })       
+          })
           .pipe(function(user_db){
             return user_db.openDoc("org.couchdb.user:"+user_name)
           })
@@ -147,14 +147,9 @@ if(Backbone && !Backbone.CouchDB_User && $.couch){
       },
       logout: function() {
         var user_model = this;
-        $.couch.logout({
-          success: function() {
-            user_model.trigger('loggedout');
-          },
-          error: function(){
-            user_model.trigger('error:loggedout');
-          }
-        });
+        $.couch.logout()
+          .done(_.bind(user_model.trigger,user_model,'loggedout'))
+          .fail(_.bind(user_model.trigger,user_model,'error:loggedout'))
       },
       change_password:function(new_password){
         var user_model = this;
