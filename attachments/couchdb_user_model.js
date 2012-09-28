@@ -19,7 +19,7 @@ if(Backbone && !Backbone.CouchDB_User && $.couch){
           }
           return db;
         },
-        extract_collection_name: function(model) {
+ /*       extract_collection_name: function(model) {
           var _name, _splitted;
           if (model == null) {
             throw new Error("No model has been passed");
@@ -39,7 +39,7 @@ if(Backbone && !Backbone.CouchDB_User && $.couch){
           _name = _splitted.length > 0 ? _splitted[0] : _name;
           _name = _name.replace("/", "");
           return _name;
-        }
+        } */
       },
       read: function(model, opts) {
         return con.read_model(model, opts);
@@ -68,10 +68,10 @@ if(Backbone && !Backbone.CouchDB_User && $.couch){
       create: function(model, opts) {
         var coll, vals;
         vals = model.toJSON();
-        coll = this.helpers.extract_collection_name(model);
-        if (coll.length > 0) {
-          vals.collection = coll;
-        }
+        //coll = this.helpers.extract_collection_name(model);
+        //if (coll.length > 0) {
+        //  vals.collection = coll;
+        //}
         return this.helpers.make_db().saveDoc(vals, {
           success: function(doc) {
             opts.success({
@@ -175,9 +175,9 @@ if(Backbone && !Backbone.CouchDB_User && $.couch){
                   })
             })
         
-          //          error:function() {
-          //            user_model.trigger('error:loggedin');
-          //          });
+        //          error:function() {
+        //            user_model.trigger('error:loggedin');
+        //          });
       },
       logout: function() {
         var user_model = this;
