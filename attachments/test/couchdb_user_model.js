@@ -74,9 +74,13 @@ describe('user model',function(){
   it('should have all proper fields available when logged in', function(done) {
     function make_sure_user_has_required_fields() {
       var expected_user_doc = _.extend({},user_defaults,{type:"user"});
+      delete expected_user_doc.password;
       var user_model_to_compare = user_model.toJSON();
       delete user_model_to_compare._rev;
       delete user_model_to_compare._id;
+      delete user_model_to_compare.password;
+      delete user_model_to_compare.password_sha;
+      delete user_model_to_compare.salt;
       expect(user_model_to_compare).eql(expected_user_doc);
       done();
     }
@@ -86,9 +90,12 @@ describe('user model',function(){
 
   it("should be able to update it's password",function(done){
     var fun_user_params = {password:changed_password};
-    user_model.on('all',log_args('user model'));
+    //user_model.on('all',log_args('user model'));
     user_model.set(fun_user_params);
-    user_model.on('loggedin',call(done));
+    user_model.on('loggedin',function(){
+      user_model.off();
+      done()
+    });
     user_model.on('sync', _.bind(user_model.login, user_model))
     user_model.save();
   })

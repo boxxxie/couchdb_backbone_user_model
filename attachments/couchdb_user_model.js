@@ -148,14 +148,21 @@ if(Backbone && !Backbone.CouchDB_User && $.couch){
         var user_data = this.toJSON();
         var password = user_data.password;
         delete user_data.password;
-        $.couch.signup(user_data, password,{
+        $.couch.signup(user_data,password)
+          .done(function(a,b,c){
+            user_model.trigger('registered')
+          })
+          .fail(function(a,b,c){
+            user_model.trigger('error:registered')
+          })
+        /*$.couch.signup(user_data, password,{
           success:function(){
 	    user_model.trigger('registered');
           },
           error:function() {
             user_model.trigger('error:registered');
           }
-        });
+       })*/
       },
       login: function() {
         var user_model = this;
