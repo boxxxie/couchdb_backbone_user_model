@@ -75,12 +75,7 @@ describe('user model',function(){
     function make_sure_user_has_required_fields() {
       var expected_user_doc = _.extend({},user_defaults,{type:"user"});
       delete expected_user_doc.password;
-      var user_model_to_compare = user_model.toJSON();
-      delete user_model_to_compare._rev;
-      delete user_model_to_compare._id;
-      delete user_model_to_compare.password;
-      delete user_model_to_compare.password_sha;
-      delete user_model_to_compare.salt;
+      var user_model_to_compare = _.omit(user_model.toJSON(), "_rev", "_id", "password", "password_sha", "salt");
       expect(user_model_to_compare).eql(expected_user_doc);
       done();
     }
@@ -88,7 +83,23 @@ describe('user model',function(){
     user_model.login();
   });
 
-  it("should be able to update it's password",function(done){
+  it("should be able to retrieve session", function(done) {
+    // login, create a new user model, call session on the new object, compare objects
+    function models_equal(model1){
+        return function(model2) {
+            var model1_to_compare = _.omit(model1.toJSON(), "password");
+            expect(model1_to_compare).eql(model2.toJSON());
+            done();
+        }
+    }
+    var make_sure_session_model_and_login_model_are_same = models_equal(user_model);
+    //we already logged in from the last function, so we can use that data because we are lazy and dirty
+    var model_simulating_page_refresh = new Backbone.CouchDB_User();
+    model_simulating_page_refresh.on('loggedin',make_sure_session_model_and_login_model_are_same)
+    model_simulating_page_refresh.session();
+  });
+
+  it("should be able to update its password",function(done){
     user_model.change_password(changed_password)
       .done(_.bind(done))
       .fail(_throw('failed to change users password'));

@@ -126,6 +126,26 @@ if(Backbone && !Backbone.CouchDB_User && $.couch){
             user_model.trigger('error:registered')
           })
       },
+      session: function() {
+          var user_model = this;
+          var user_name = user_model.get('name');
+          $.couch.session()
+            .done(function(resp){
+              if(!(resp && resp.userCtx && resp.userCtx.name)){throw 'no user cookies'}
+              var user_name = resp.userCtx.name;
+              $.couch.userDb()
+                .pipe(function(db){
+                  return db.openDoc("org.couchdb.user:"+user_name)
+                })
+                .done(function(userDoc){
+                  user_model.set(userDoc);
+                  user_model.trigger('loggedin',user_model);
+                })
+                .fail(function(){
+                  user_model.trigger('error:loggedin');
+                })
+            });
+      },
       login: function() {
         var user_model = this;
         var user_name = user_model.get('name');
