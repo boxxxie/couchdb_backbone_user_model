@@ -12,3 +12,8 @@ tramp
 # Org-mode
 .org-id-locations
 *_archive
+
+.*.sw[a-z]
+*.un~
+Session.vim
+.netrwhist
