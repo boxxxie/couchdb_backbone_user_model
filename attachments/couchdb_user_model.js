@@ -167,6 +167,7 @@ if(Backbone && !Backbone.CouchDB_User && $.couch){
       },
       logout: function() {
         var user_model = this;
+        user_model.clear({silent: true});
         $.couch.logout()
           .done(_.bind(user_model.trigger,user_model,'loggedout'))
           .fail(_.bind(user_model.trigger,user_model,'error:loggedout'))

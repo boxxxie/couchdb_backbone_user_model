@@ -106,7 +106,10 @@ describe('user model',function(){
   })
 
   it('should be able to logout', function(done) {
-    user_model.on('loggedout', call(done));
+    user_model.on('loggedout', function () {
+      expect(user_model.get('name')).to.be.undefined;
+      done();
+    });
     user_model.on('error:loggedout', _throw('oopsie'));
     user_model.logout();
   });
