@@ -52,11 +52,23 @@ describe('user model',function(){
           })
         })
     }
+    user_model.set("password_confirm", user_model.get("password"));
     user_model.on('registered',make_sure_user_was_added);
     user_model.on('error:registered', _throw('uhoh'));
     user_model.signup();
-  })
+  });
 
+  it('should not be able to sign up with invalid confirm password',function(done){
+    user_model.set("password_confirm", "foobar");
+    user_model.off(); // turn off event listener that we added earlier
+    user_model.on('error:registered', function(error) { 
+      expect(error).to.have.property("password_confirm");
+      done();
+    });
+    user_model.signup();
+    user_model.unset("password_confirm");
+  });
+  
   it('should be able to login', function(done) {
     function make_sure_user_was_loggedin() {
       $.couch.session({

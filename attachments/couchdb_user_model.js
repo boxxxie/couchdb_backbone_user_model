@@ -113,18 +113,25 @@ if(Backbone && !Backbone.CouchDB_User && $.couch){
           return con.del(model, opts);
         }
       },
-      signup:function(){
+      signup: function() {
         var user_model = this;
         var user_data = user_model.toJSON();
         var password = user_data.password;
+        var password_confirm = user_data.password_confirm;
         delete user_data.password;
-        $.couch.signup(user_data,password)
-          .done(function(a,b,c){
-            user_model.trigger('registered')
-          })
-          .fail(function(a,b,c){
-            user_model.trigger('error:registered')
-          })
+        delete user_data.password_confirm;
+        if ( password === password_confirm ) {
+          $.couch.signup(user_data,password)
+            .done(function(a,b,c){
+              user_model.trigger('registered');
+            })
+            .fail(function(a,b,c){
+              user_model.trigger('error:registered');
+            });
+        }
+        else {
+          user_model.trigger('error:registered', { "password_confirm": "Passwords do not match" });
+        }
       },
       session: function() {
           var user_model = this;
