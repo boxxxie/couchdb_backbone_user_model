@@ -120,17 +120,29 @@ if(Backbone && !Backbone.CouchDB_User && $.couch){
         var password_confirm = user_data.password_confirm;
         delete user_data.password;
         delete user_data.password_confirm;
-        if ( password === password_confirm ) {
-          $.couch.signup(user_data,password)
+
+        var errors = {};
+        if ( !password_confirm || password !== password_confirm ) {
+          errors["password_confirm"] = "Passwords do not match";
+        }
+        if ( !user_data.name ) {
+          errors["name"] = "Name is required";
+        }
+
+        if ( _.isEmpty(errors) ) {
+          var error_handler = function(status, error, reason) {
+            console.log(status);
+          }
+          $.couch.signup(user_data, password, { error: error_handler })
             .done(function(a,b,c){
-              user_model.trigger('registered');
+              user_model.trigger('registered', user_model);
             })
             .fail(function(a,b,c){
               user_model.trigger('error:registered');
             });
         }
         else {
-          user_model.trigger('error:registered', { "password_confirm": "Passwords do not match" });
+          user_model.trigger('error:registered', errors);
         }
       },
       session: function() {
