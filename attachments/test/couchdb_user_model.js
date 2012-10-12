@@ -25,12 +25,15 @@ describe('jquery.couch',function(){
   it('should exist',function(){
     expect(jQuery).to.have.property('couch');
   })
-})
+});
 
-describe('user model',function(){
-  it('should exist',function(){ 
+describe('Backbone', function() {
+  it('should have CouchDB_User model', function() {
     expect(Backbone).to.have.property('CouchDB_User');
   });
+});
+
+describe('user model',function(){
   var user_pass = $.couch.newUUID();
   var user_name = $.couch.newUUID();
   var changed_password = $.couch.newUUID();
@@ -41,6 +44,25 @@ describe('user model',function(){
     custom_field:'my custom field'
   };
   var user_model = new Backbone.CouchDB_User(user_defaults);
+
+  it('should not be able to sign up with invalid confirm password',function(done){
+    user_model.set("password_confirm", "foobar");
+    user_model.on('error:registered', function(error) { 
+      expect(error).to.have.property("password_confirm");
+      done();
+    });
+    user_model.signup();
+  });
+
+  it('should not be able to sign up if name is missing', function(done) {
+    user_model.set("name", "");
+    user_model.on('error:registered', function(error) { 
+      expect(error).to.have.property("name");
+      done();
+    });
+    user_model.signup();
+    user_model.set("name", user_name);
+  });
 
   it('should be able to sign up',function(done){
     function make_sure_user_was_added(){
@@ -56,19 +78,9 @@ describe('user model',function(){
     user_model.on('registered',make_sure_user_was_added);
     user_model.on('error:registered', _throw('uhoh'));
     user_model.signup();
-  });
-
-  it('should not be able to sign up with invalid confirm password',function(done){
-    user_model.set("password_confirm", "foobar");
-    user_model.off(); // turn off event listener that we added earlier
-    user_model.on('error:registered', function(error) { 
-      expect(error).to.have.property("password_confirm");
-      done();
-    });
-    user_model.signup();
     user_model.unset("password_confirm");
   });
-  
+
   it('should be able to login', function(done) {
     function make_sure_user_was_loggedin() {
       $.couch.session({
@@ -126,6 +138,11 @@ describe('user model',function(){
     user_model.logout();
   });
   
+  afterEach(function(done) {
+    user_model.off();
+    done();
+  });
+
   after(function(done){
     // cleanup: remove registered user, must be logged out (admin
     // party mode)
