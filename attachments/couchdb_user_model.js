@@ -150,7 +150,10 @@ if(Backbone && !Backbone.CouchDB_User && $.couch){
           var user_name = user_model.get('name');
           $.couch.session()
             .done(function(resp){
-              if(!(resp && resp.userCtx && resp.userCtx.name)){throw 'no user cookies'}
+              if(!(resp && resp.userCtx && resp.userCtx.name)) {
+                user_model.trigger('error:loggedin');
+                //throw 'no user cookies';
+              }
               var user_name = resp.userCtx.name;
               $.couch.userDb()
                 .pipe(function(db){
