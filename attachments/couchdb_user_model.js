@@ -145,7 +145,7 @@ if(Backbone && !Backbone.CouchDB_User && $.couch){
           user_model.trigger('error:registered', errors);
         }
       },
-      session: function() {
+      session: function(options) {
           var user_model = this;
           var user_name = user_model.get('name');
           $.couch.session()
@@ -163,6 +163,9 @@ if(Backbone && !Backbone.CouchDB_User && $.couch){
                 .done(function(userDoc){
                   user_model.set(userDoc);
                   user_model.trigger('loggedin',user_model);
+                  if ( options && options.success ) {
+                    options.success();
+                  }
                 })
                 .fail(function(){
                   user_model.trigger('error:loggedin');
