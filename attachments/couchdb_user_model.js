@@ -165,42 +165,86 @@
         },
         session: function(options) {
             var user_model = this;
-            var user_name = user_model.get('name');
+
+            var deferred = new $.Deferred();
+
             $.couch.session().done(function(resp) {
                 if (!(resp && resp.userCtx && resp.userCtx.name)) {
-                    user_model.trigger('error:loggedin');
-                    return;
-                    //throw 'no user cookies';
-                }
-                var user_name = resp.userCtx.name;
+                    user_model.trigger('error:session');
 
-                $.couch.userDb().pipe(function(db) {
-                    return db.openDoc("org.couchdb.user:" + user_name);
-                }).done(function(userDoc) {
-                    user_model.set(userDoc);
-                    user_model.trigger('loggedin', user_model);
-                    if (options && options.success) {
-                        options.success();
-                    }
-                }).fail(function() {
-                    user_model.trigger('error:loggedin');
-                });
+                    deferred.reject();
+                    //throw 'no user cookies';
+                } else {
+                    var user_name = resp.userCtx.name;
+
+                    // TODO: ensure that user data has been loaded?
+                    //user_model.ensureDataHasBeenLoadedFromServer();
+                    // TODO: check if the session matches the loaded data?
+                    //if (user_name !== user_model.user_name
+                    //  || user_name !== loaded_user_model.user_name) {
+                    //    throw new Error("The user session user didn't match ");
+                    //}
+                    // TODO: data must be loaded for this to be triggered with data
+                    //user_model.trigger('session', user_model);
+                    user_model.trigger('session');
+
+                    // TODO: find calls that use options.success and convert to deferred
+                    //if (options && options.success) {
+                    //    options.success();
+                    //}
+                    deferred.resolve();
+                }
             });
+
+            return deferred.promise();
         },
         login: function() {
             var user_model = this;
             var user_name = user_model.get('name');
             var name_pass = _.pick(user_model.toJSON(), 'name', 'password');
-            $.couch.login(name_pass).pipe(function(nothing) {
-                return $.couch.userDb();
-            }).pipe(function(user_db) {
-                return user_db.openDoc("org.couchdb.user:" + user_name);
-            }).done(function(userDoc) {
-                user_model.set(userDoc);
+            $.couch.login(name_pass).done(function() {
                 user_model.trigger('loggedin');
             }).fail(function() {
                 user_model.trigger('error:loggedin');
             });
+        },
+        fillWithData: function() {
+            var user_model = this;
+
+            return $.when().then(function() {
+                var user_db = $.couch.userDb();
+
+                return user_db;
+            }).then(function(user_db) {
+                var userDoc = user_db.openDoc("org.couchdb.user:" + user_name);
+
+                return userDoc;
+            }).then(function(userDoc) {
+                user_model.set(userDoc);
+
+                // TODO: namespace with .fromserver?
+                user_model.trigger('filledwithdatafromserver', user_model);
+
+                return user_model;
+            });
+        },
+        ensureFilledWithData: function() {
+            var user_model = this;
+
+            var gotDataDeferred = new $.Deferred();
+
+            // TODO: construct a test to see if the data was loaded.
+            // Duck typing, I guess.
+            //if (user_model.hasSomethingSimpleToTest) {
+            //    // Resolve right away
+            //    gotDataDeferred.resolve();
+            //} else {
+            user_model.fillWithData().done(function() {
+                // TODO: namespace differently from .fromserver?
+                user_model.trigger('filledwithdata', user_model);
+            }).done(gotDataDeferred.resolve).fail(gotDataDeferred.reject);
+            //}
+            return gotDataDeferred.promise();
         },
         logout: function() {
             var user_model = this;
