@@ -2,17 +2,18 @@
   <head>
     <meta charset="utf-8">
     <title>Mocha Tests</title>
-    <link rel="stylesheet" href="mocha.css" />
+    <link rel="stylesheet" href="../lib/mocha.css" />
   </head>
   <body>
     <div id="mocha"></div>
-    <script src="jquery.js"></script>
-    <script src="jquery.couch.js"></script>
-    <script src="underscore.js"></script>
-    <script src="backbone.js"></script>
-    <script src="couchdb_user_model.js"></script>
-    <script src="mocha.js"></script>
-    <script src="chai.js"></script>
+    <script src="../lib/jquery.js"></script>
+    <script src="../lib/modules/jquery.couch.js"></script>
+    <script src="../lib/modules/underscore-min.js"></script>
+    <script src="../lib/backbone.js"></script>
+    <script src="../couchdb_user_model.js"></script>
+
+    <script src="../lib/mocha.js"></script>
+    <script src="../lib/chai.js"></script>
     <script>
       (function(){
       mocha.setup('bdd');
@@ -21,8 +22,9 @@
       should = chai.should;
       })()
     </script>
-    <script src="site.js"></script>
-    <script src="test/couchdb_user_model.js"></script>
+    <script src="../lib/site.js"></script>
+
+    <script src="couchdb_user_model.js"></script>
     <script>
       mocha.run();
     </script>

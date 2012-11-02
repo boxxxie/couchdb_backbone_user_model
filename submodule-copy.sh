@@ -1,8 +1,19 @@
 #!/bin/bash
 
+# Change to this script's folder
+cd $(dirname "${0}")
+
+
 echo Copying submodules...
 
-#Jquery Couchdb Plugin
-cp libraries/couchdb/share/www/script/jquery.couch.js attachments/
+
+mkdir -p  attachments/lib/modules/
+
+cp libraries/couchdb/share/www/script/jquery.couch.js attachments/lib/modules/
+cp libraries/underscore/underscore-min.js attachments/lib/modules/
 
 echo Finished copying submodules.
+
+
+# Return to original folder
+cd - > /dev/null
