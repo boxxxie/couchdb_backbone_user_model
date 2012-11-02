@@ -17,3 +17,6 @@ tramp
 *.un~
 Session.vim
 .netrwhist
+libraries/
+
+attachments/jquery.couch.js

@@ -1,0 +1,6 @@
+[submodule "libraries/couchdb"]
+	path = libraries/couchdb
+	url = git://github.com/boxxxie/couchdb.git
+[submodule "libraries/underscore"]
+	path = libraries/underscore
+	url = git://github.com/documentcloud/underscore.git
