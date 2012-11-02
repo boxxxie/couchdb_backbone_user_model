@@ -140,7 +140,7 @@
             delete user_data.password_confirm;
 
             var errors = {};
-            if (!password) {
+            if (password === null || password === undefined || password === "") {
                 errors["password_empty"] = "A password is required";
             }
             if (!password_confirm || password !== password_confirm) {
