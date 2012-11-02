@@ -1,7 +1,7 @@
 #!/bin/bash
 
-# Change to this script's folder
-cd $(dirname "${0}")
+# Change to this project's root folder
+cd $(dirname "${0}")/../../
 
 
 echo Copying submodules...
