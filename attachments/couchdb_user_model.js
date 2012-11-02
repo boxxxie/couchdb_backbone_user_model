@@ -205,11 +205,16 @@
             var user_model = this;
             var user_name = user_model.get('name');
             var name_pass = _.pick(user_model.toJSON(), 'name', 'password');
+
+            var deferred = new $.Deferred();
+
             $.couch.login(name_pass).done(function() {
                 user_model.trigger('loggedin');
-            }).fail(function() {
+            }).done(deferred.resolve).fail(function() {
                 user_model.trigger('error:loggedin');
-            });
+            }).fail(deferred.reject);
+
+            return deferred.promise();
         },
         fillWithData: function() {
             var user_model = this;
