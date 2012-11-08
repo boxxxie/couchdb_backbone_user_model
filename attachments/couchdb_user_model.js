@@ -171,31 +171,49 @@
 
             var deferred = new $.Deferred();
 
+            // Wrapping resolve and reject to make sure the triggered events are consistent
+            function resolve(){
+                // TODO: data must be loaded for this to be triggered with data
+                //user_model.trigger('session', user_model);
+                user_model.trigger('session');
+
+                deferred.resolve();
+            }
+
+            function reject(errorObject){
+                user_model.trigger('error:session', errorObject);
+
+                deferred.reject();
+            }
+
             $.couch.session().done(function(resp) {
                 if (!(resp && resp.userCtx && resp.userCtx.name)) {
-                    user_model.trigger('error:session');
+                    var no_user_session_error = new Error("The user has no session.");
 
-                    deferred.reject();
-                    //throw 'no user cookies';
+                    reject(no_user_session_error);
                 } else {
-                    var user_name = resp.userCtx.name;
+                    var model_user_name = user_model.user_name;
+                    var session_user_name = resp.userCtx.name;
 
-                    // TODO: ensure that user data has been loaded?
-                    //user_model.ensureDataHasBeenLoadedFromServer();
-                    // TODO: check if the session matches the loaded data?
-                    //if (user_name !== user_model.user_name
-                    //  || user_name !== loaded_user_model.user_name) {
-                    //    throw new Error("The user session user didn't match ");
-                    //}
-                    // TODO: data must be loaded for this to be triggered with data
-                    //user_model.trigger('session', user_model);
-                    user_model.trigger('session');
+                    // Check if the session matches the loaded data?
+                    if (priv.isNullOrUndefined(model_user_name)) {
+                        user_model.set({
+                            // Store session
+                            "user_name": session_user_name
+                        });
+                    } else {
+                        if (session_user_name !== model_user_name) {
 
-                    // TODO: find calls that use options.success and convert to deferred
-                    //if (options && options.success) {
-                    //    options.success();
-                    //}
-                    deferred.resolve();
+                            var user_name_mismatch_error = new Error("The user session's user name didn't match the loaded model's user name.", {
+                                "session_user_name": session_user_name,
+                                "model_user_name": model_user_name,
+                            });
+
+                            reject(user_name_mismatch_error);
+                        }
+                    }
+
+                    resolve();
                 }
             });
 
@@ -219,15 +237,24 @@
         fillWithData: function() {
             var user_model = this;
 
-            return $.when().then(function() {
-                var user_db = $.couch.userDb();
+            return $.when($.couch.userDb()).pipe(function(user_db) {
+                var deferred = new $.Deferred();
 
-                return user_db;
-            }).then(function(user_db) {
-                var userDoc = user_db.openDoc("org.couchdb.user:" + user_name);
+                user_db.openDoc("org.couchdb.user:" + user_model.get("user_name"), {
+                    success: deferred.resolve,
+                    error: deferred.reject
+                });
 
-                return userDoc;
-            }).then(function(userDoc) {
+                // TODO DEBUG: remove
+                deferred.done(function() {
+                    console.log("fillWithData", "done", arguments);
+                }).fail(function() {
+                    console.error("fillWithData", "fail", arguments);
+                });
+
+                return deferred.promise();
+            }).pipe(function(userDoc) {
+                console.log("userDoc", userDoc);
                 user_model.set(userDoc);
 
                 // TODO: namespace with .fromserver?
